@@ -1,0 +1,47 @@
+//@version=5
+strategy("Estrategia Técnica Popular Semanal", overlay=true)
+
+// 1. Media Móvil Exponencial (EMA) de 20 períodos
+ema20 = ta.ema(close, 20)
+plot(ema20, color=color.blue, title="EMA 20")
+
+// 2. Índice de Fuerza Relativa (RSI) de 14 períodos
+rsi14 = ta.rsi(close, 14)
+plot(rsi14, color=color.red, title="RSI 14")
+
+// 3. Bandas de Bollinger (BB) de 20 períodos y 2 desviaciones estándar
+[middle, upper, lower] = ta.bb(close, 20, 2)
+plot(middle, color=color.orange, title="BB Middle")
+plot(upper, color=color.green, title="BB Upper")
+plot(lower, color=color.green, title="BB Lower")
+
+// 4. Volumen (Volume)
+plot(volume, style=plot.style_columns, color=color.gray, title="Volumen")
+
+// --- SEÑALES DE COMPRA Y VENTA ---
+
+// Compra: 
+// - Precio cruza por encima de la EMA de 20
+// - RSI está por debajo de 30 (sobreventa)
+// - Volumen aumenta en la última vela
+buySignal = ta.crossover(close, ema20) and (rsi14 < 30) and (volume > volume[1])
+
+// Venta:
+// - Precio cruza por debajo de la EMA de 20
+// - RSI está por encima de 70 (sobrecompra)
+// - Volumen aumenta en la última vela
+sellSignal = ta.crossunder(close, ema20) and (rsi14 > 70) and (volume > volume[1])
+
+// Mostrar señales en el gráfico
+plotshape(buySignal, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small)
+plotshape(sellSignal, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small)
+
+// --- EJECUCIÓN DE ÓRDENES ---
+
+// Estrategia de compra
+if (buySignal)
+    strategy.entry("Compra", strategy.long)
+
+// Estrategia de venta
+if (sellSignal)
+    strategy.entry("Venta", strategy.short)

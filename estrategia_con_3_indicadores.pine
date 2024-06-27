@@ -1,0 +1,16 @@
+//@version=5
+strategy("Mi Estrategia con Indicadores", overlay=true)
+
+// 1. Media Móvil Exponencial (EMA)
+ema20 = ta.ema(close, 20)
+plot(ema20, color=color.blue, title="EMA 20")
+
+// 2. Índice de Fuerza Relativa (RSI)
+rsi14 = ta.rsi(close, 14)
+plot(rsi14, color=color.red, title="RSI 14")
+
+// 3. Bandas de Bollinger (BB)
+[middle, upper, lower] = ta.bb(close, 20, 2)
+plot(middle, color=color.orange, title="BB Middle")
+plot(upper, color=color.green, title="BB Upper")
+plot(lower, color=color.green, title="BB Lower")

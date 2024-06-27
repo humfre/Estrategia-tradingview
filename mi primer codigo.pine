@@ -1,0 +1,2 @@
+//@version=5
+strategy("Nombre de mi Estrategia", overlay=true)

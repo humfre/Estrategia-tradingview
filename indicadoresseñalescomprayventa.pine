@@ -1,0 +1,35 @@
+//@version=5
+strategy("Mi Estrategia con Señales", overlay=true)
+
+// 1. Media Móvil Exponencial (EMA)
+ema20 = ta.ema(close, 20)
+plot(ema20, color=color.blue, title="EMA 20")
+
+// 2. Índice de Fuerza Relativa (RSI)
+rsi14 = ta.rsi(close, 14)
+plot(rsi14, color=color.red, title="RSI 14")
+
+// 3. Bandas de Bollinger (BB)
+[middle, upper, lower] = ta.bb(close, 20, 2)
+plot(middle, color=color.orange, title="BB Middle")
+plot(upper, color=color.green, title="BB Upper")
+plot(lower, color=color.green, title="BB Lower")
+
+// --- SEÑALES DE COMPRA Y VENTA ---
+
+// Compra: Precio cruza por encima de la EMA y el RSI está por debajo de 30
+buySignal = ta.crossover(close, ema20) and (rsi14 < 30)
+
+// Venta: Precio cruza por debajo de la EMA y el RSI está por encima de 70
+sellSignal = ta.crossunder(close, ema20) and (rsi14 > 70)
+
+// Mostrar señales en el gráfico
+plotshape(buySignal, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small)
+plotshape(sellSignal, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small)
+
+// Ejecutar órdenes (solo en modo strategy)
+if (buySignal)
+    strategy.entry("Compra", strategy.long)
+
+if (sellSignal)
+    strategy.entry("Venta", strategy.short)

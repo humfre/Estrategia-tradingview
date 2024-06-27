@@ -1,0 +1,39 @@
+//@version=5
+strategy("Mi Estrategia con Señales y Órdenes - Nuevos Indicadores", overlay=true)
+
+// 1. MACD (Convergencia/Divergencia de Medias Móviles)
+[macdLine, signalLine, histLine] = ta.macd(close, 12, 26, 9)
+plot(macdLine, color=color.blue, title="MACD Line")
+plot(signalLine, color=color.orange, title="Signal Line")
+
+// 2. Estocástico
+k = ta.sma(ta.stoch(close, high, low, 14), 3)
+d = ta.sma(k, 3)
+plot(k, color=color.green, title="%K")
+plot(d, color=color.red, title="%D")
+
+// 3. Media Móvil Simple (SMA)
+sma50 = ta.sma(close, 50)
+plot(sma50, color=color.purple, title="SMA 50")
+
+// --- SEÑALES DE COMPRA Y VENTA ---
+
+// Compra: MACD cruza por encima de la línea de señal y el Estocástico %K cruza por encima de %D
+buySignal = ta.crossover(macdLine, signalLine) and ta.crossover(k, d)
+
+// Venta: MACD cruza por debajo de la línea de señal y el Estocástico %K cruza por debajo de %D
+sellSignal = ta.crossunder(macdLine, signalLine) and ta.crossunder(k, d)
+
+// Mostrar señales en el gráfico
+plotshape(buySignal, style=shape.triangleup, location=location.belowbar, color=color.green, size=size.small)
+plotshape(sellSignal, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small)
+
+// --- EJECUCIÓN DE ÓRDENES ---
+
+// Estrategia de compra
+if (buySignal)
+    strategy.entry("Compra", strategy.long)
+
+// Estrategia de venta
+if (sellSignal)
+    strategy.entry("Venta", strategy.short)
